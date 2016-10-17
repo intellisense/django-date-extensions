@@ -3,6 +3,7 @@ import time
 import re
 from functools import total_ordering
 
+import django
 from django.utils.six import with_metaclass
 from django.db import models
 from django import forms
@@ -18,7 +19,7 @@ try:
 except ImportError:
     pass
 
-PREFIX_RE = re.compile('^(?i)[a-zA-Z]{1,5}$')
+PREFIX_RE = re.compile('^(?i)[a-zA-Z]+[.,]?$')
 
 
 @total_ordering
@@ -118,12 +119,12 @@ class ApproximateDate(object):
 
 
 ansi_date_re = re.compile(r'^\d{4}-\d{1,2}-\d{1,2}$')
-prefix_date_re = re.compile(r'^([a-zA-Z]+) (\d{4})$')
-prefix_date_reverse_re = re.compile(r'^(\d{4}) ([a-zA-Z]+)$')
+prefix_date_re = re.compile(r'^([a-zA-Z]+[.,]?) (\d{4})$')
+prefix_date_reverse_re = re.compile(r'^(\d{4}) ([a-zA-Z]+[,.]?)$')
 
-try:
+if django.VERSION < (1, 8,):
     FIELD_BASE = with_metaclass(models.SubfieldBase, models.CharField)
-except AttributeError:
+else:
     FIELD_BASE = models.CharField
 
 
