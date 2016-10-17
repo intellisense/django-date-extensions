@@ -77,8 +77,6 @@ class ApproximateDate(object):
         elif self.past:
             return 'past'
         elif self.string_format:
-            if not settings.DISPLAY_STRING_FORMATS:
-                return ''
             return self.string_format
         elif self.year and self.month and self.day:
             return dateformat.format(self, settings.OUTPUT_FORMAT_DAY_MONTH_YEAR)

@@ -295,11 +295,3 @@ class StringFormatsDates(TestCase):
         ApproxDateModel.objects.create(start=ApproximateDate(string_format='unknown'))
         self.assertEqual(ApproxDateModel.objects.filter(start=ApproximateDate(string_format='unknown')).count(), 1)
 
-
-class StringFormatsDatesB(TestCase):
-    def setUp(self):
-        settings.DISPLAY_STRING_FORMATS = False
-
-    def test_display_not_visible(self):
-        obj = ApproxDateModel.objects.create(start=ApproximateDate(string_format='unknown'))
-        self.assertEqual(str(obj.start), '')
