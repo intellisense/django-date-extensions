@@ -1,8 +1,9 @@
 from datetime import date, datetime
 import os
+import unittest
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'example.settings'
 
-from django.test import TestCase
 from django.db import models
 from django import forms
 
@@ -25,7 +26,7 @@ class ApproxDateForm(forms.Form):
     start = ApproximateDateFormField()
 
 
-class PastAndFuture(TestCase):
+class PastAndFuture(unittest.TestCase):
 
     def test_setting_both(self):
         self.assertRaises(ValueError, ApproximateDate, past=True, future=True)
@@ -43,8 +44,10 @@ class PastAndFuture(TestCase):
         self.assertEqual(repr(ApproximateDate(past=True)), 'past')
 
 
-class CompareDates(TestCase):
+class CompareDates(unittest.TestCase):
+
     def test_compare(self):
+
         past = ApproximateDate(past=True)
         past_too = ApproximateDate(past=True)
         y_past = ApproximateDate(year=2000)
@@ -157,7 +160,7 @@ class CompareDates(TestCase):
         self.assertTrue(ApproximateDate(2007) < date(2007, 9, 3))
 
 
-class Lengths(TestCase):
+class Lengths(unittest.TestCase):
     known_lengths = (
         ({'year': 1999}, 10),
         ({'year': 1999, 'month': 1}, 10),
@@ -172,7 +175,7 @@ class Lengths(TestCase):
             self.assertEqual(len(approx), length)
 
 
-class ApproxDateFiltering(TestCase):
+class ApproxDateFiltering(unittest.TestCase):
 
     def setUp(self):
         for year in [2000, 2001, 2002, 2003, 2004]:
@@ -196,7 +199,7 @@ class ApproxDateFiltering(TestCase):
         self.assertEqual(ApproxDateModel.objects.filter(start=ApproximateDate(year=2004, prefix='about')).count(), 1)
 
 
-class PrefixDates(TestCase):
+class PrefixDates(unittest.TestCase):
     def test_with_year_month_day(self):
         self.assertRaises(ValueError, ApproximateDate, prefix='about', year=2015, month=12, day=1)
 
@@ -239,7 +242,7 @@ class PrefixDates(TestCase):
         self.assertEqual(sorted(years, reverse=True), [o.start.year for o in ApproxDateModel.objects.all().order_by('-start')])
 
 
-class StringFormatsDates(TestCase):
+class StringFormatsDates(unittest.TestCase):
     def setUp(self):
         settings.DISPLAY_STRING_FORMATS = True
 
@@ -292,6 +295,9 @@ class StringFormatsDates(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_filtering_with_string_format(self):
+        ApproxDateModel.objects.all().delete()
         ApproxDateModel.objects.create(start=ApproximateDate(string_format='unknown'))
         self.assertEqual(ApproxDateModel.objects.filter(start=ApproximateDate(string_format='unknown')).count(), 1)
 
+if __name__ == "__main__":
+    unittest.main()
